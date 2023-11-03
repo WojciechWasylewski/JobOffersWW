@@ -3,10 +3,15 @@ package com.joboffers.features;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.joboffers.BaseIntegrationTests;
 import com.joboffers.SampleJobOfferResponse;
+import com.joboffers.domain.offer.dto.OfferResponseDto;
 import com.joboffers.infrastructure.offer.scheduler.HttpOffersScheduler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 public class TypicalScenarioUserWantsToSeeOffersIntegrationTest extends BaseIntegrationTests implements SampleJobOfferResponse {
     @Autowired
@@ -18,9 +23,12 @@ public class TypicalScenarioUserWantsToSeeOffersIntegrationTest extends BaseInte
                 .willReturn(WireMock.aResponse()
                         .withStatus(HttpStatus.OK.value())
                         .withHeader("Content-Type", "application/json")
-                        .withBody(bodyWithFourOffersJson())));
+                        .withBody(bodyWithZeroOffersJson())));
 //    Step 2: scheduler run 1st time and made GET to external server and download zero offers to database.
-        httpOffersScheduler.fetchAllOffersAndSaveAllIfNotExists();
+        // given && when
+        List<OfferResponseDto> newOffers = httpOffersScheduler.fetchAllOffersAndSaveAllIfNotExists();
+        // then
+        assertThat(newOffers).isEmpty();
 
 //    Step 3: user which is not registered yet tried to get JWT token by requesting POST with: username=someUser, password=somePassword and system returns UNAUTHORIZED (401).
 //    Step 4: user made GET /offers with no JWT token znd system returned UNAUTHORIZED (401).
