@@ -17,6 +17,7 @@ import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 public class TypicalScenarioUserWantsToSeeOffersIntegrationTest extends BaseIntegrationTests implements SampleJobOfferResponse {
@@ -64,6 +65,19 @@ public class TypicalScenarioUserWantsToSeeOffersIntegrationTest extends BaseInte
 //    Step 9: scheduler run 2nd time and made GET to external server and 2 offers with id:1000 and id:2000 are added to database.
 //    Step 10: user made GET /offers with header ”Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers with id:1000 and id:2000
 //    Step 11: user made GET /offers/9999 (for search offer with id:9999), and system returned NOT_FOUND(404) with message ”Offer with id 9999 not found”. // user made GET /offers/1000 and system returned OK(200) with offer with id:1000.
+        //given
+        String id = "9999";
+        //when
+        ResultActions performGetOffersWithNotExistingId = mockMvc.perform(get("/offers/" + id));
+        //then
+        performGetOffersWithNotExistingId.andExpect(status().isNotFound())
+                .andExpect(content().json("""
+                        {
+                        "message": "Offer with id 9999 not found",
+                        "status": "NOT_FOUND"
+                        }
+                        """.trim()));
+
 //    Step 12: external server have 2 new offers.
 //    Step 13: scheduler run 3rdtime and made GET request to server and system added two more offers with id:3000 and id:4000 to database.
 
