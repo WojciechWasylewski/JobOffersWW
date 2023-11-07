@@ -16,7 +16,9 @@ import org.springframework.test.web.servlet.ResultActions;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -66,9 +68,9 @@ public class TypicalScenarioUserWantsToSeeOffersIntegrationTest extends BaseInte
 //    Step 10: user made GET /offers with header ”Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers with id:1000 and id:2000
 //    Step 11: user made GET /offers/9999 (for search offer with id:9999), and system returned NOT_FOUND(404) with message ”Offer with id 9999 not found”. // user made GET /offers/1000 and system returned OK(200) with offer with id:1000.
         //given
-        String id = "9999";
+        String offerId = "9999";
         //when
-        ResultActions performGetOffersWithNotExistingId = mockMvc.perform(get("/offers/" + id));
+        ResultActions performGetOffersWithNotExistingId = mockMvc.perform(get("/offers/" + offerId));
         //then
         performGetOffersWithNotExistingId.andExpect(status().isNotFound())
                 .andExpect(content().json("""
@@ -80,6 +82,52 @@ public class TypicalScenarioUserWantsToSeeOffersIntegrationTest extends BaseInte
 
 //    Step 12: external server have 2 new offers.
 //    Step 13: scheduler run 3rdtime and made GET request to server and system added two more offers with id:3000 and id:4000 to database.
+//    Step 14: user made POST /offers with offer as body and system returned CREATED(201) with 1 offer
+        //given
+        //when
+        ResultActions performPostOffer = mockMvc.perform(post("/offers")
+                .content(
+                        """
+                                {
+                                "companyName": "someCompany",
+                                "position": "somePosition",
+                                "salary": "7 000 - 9 000 PLN",
+                                "offerUrl": "https://newoffeers.pl/offers/1234"
+                                }
+                                """)
+                .contentType(MediaType.APPLICATION_JSON + ";charset=UTF-8")
+        );
+        //then
+        String createdOfferJson = performPostOffer.andExpect(status().isCreated())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+
+        OfferResponseDto parsedCreatedOfferJson = objectMapper.readValue(createdOfferJson, OfferResponseDto.class);
+        String id = parsedCreatedOfferJson.id();
+        assertAll(
+                () -> assertThat(parsedCreatedOfferJson.offerUrl()).isEqualTo("https://newoffeers.pl/offers/1234"),
+                () -> assertThat(parsedCreatedOfferJson.companyName()).isEqualTo("someCompany"),
+                () -> assertThat(parsedCreatedOfferJson.salary()).isEqualTo("7 000 - 9 000 PLN"),
+                () -> assertThat(parsedCreatedOfferJson.position()).isEqualTo("somePosition"),
+                () -> assertThat(id).isNotNull()
+        );
+
+
+//step 15: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 1 offer
+        // given & when
+        ResultActions peformGetOffers = mockMvc.perform(get("/offers")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+        // then
+        String oneOfferJson = peformGetOffers.andExpect(status().isOk())
+                .andReturn()
+                .getResponse()
+                .getContentAsString();
+        List<OfferResponseDto> parsedJsonWithOneOffer = objectMapper.readValue(oneOfferJson, new TypeReference<>() {
+        });
+        assertThat(parsedJsonWithOneOffer).hasSize(1);
+        assertThat(parsedJsonWithOneOffer.stream().map(OfferResponseDto::id)).contains(id);
 
     }
 }
