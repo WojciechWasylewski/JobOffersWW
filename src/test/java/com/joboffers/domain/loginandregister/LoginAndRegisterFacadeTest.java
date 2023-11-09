@@ -1,10 +1,11 @@
 package com.joboffers.domain.loginandregister;
 
-import com.joboffers.domain.loginandregister.dto.NewUserDto;
+import com.joboffers.domain.loginandregister.dto.RegisterUserDto;
 import com.joboffers.domain.loginandregister.dto.RegistrationResultDto;
 import com.joboffers.domain.loginandregister.dto.UserDto;
 import org.assertj.core.api.AssertionsForClassTypes;
 import org.junit.jupiter.api.Test;
+import org.springframework.security.authentication.BadCredentialsException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.ThrowableAssert.catchThrowable;
@@ -18,8 +19,8 @@ class LoginAndRegisterFacadeTest {
     @Test
     public void should_find_user_by_user_name() {
         //given
-        NewUserDto newUserDto = new NewUserDto("username", "password");
-        RegistrationResultDto register = loginFacade.register(newUserDto);
+        RegisterUserDto registerUserDto = new RegisterUserDto("username", "password");
+        RegistrationResultDto register = loginFacade.register(registerUserDto);
 
         //when
         UserDto byUsername = loginFacade.findByUsername(register.username());
@@ -38,17 +39,17 @@ class LoginAndRegisterFacadeTest {
 
         //then
         AssertionsForClassTypes.assertThat(thrown)
-                .isInstanceOf(UsernameNotFoundException.class)
+                .isInstanceOf(BadCredentialsException.class)
                 .hasMessage("User not found");
     }
 
     @Test
     public void should_register_user() {
         //given
-        NewUserDto newUserDto = new NewUserDto("username", "password");
+        RegisterUserDto registerUserDto = new RegisterUserDto("username", "password");
 
         //when
-        RegistrationResultDto register = loginFacade.register(newUserDto);
+        RegistrationResultDto register = loginFacade.register(registerUserDto);
 
         //then
         assertAll(
