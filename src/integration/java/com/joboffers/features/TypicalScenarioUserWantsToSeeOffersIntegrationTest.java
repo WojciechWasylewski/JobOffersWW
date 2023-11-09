@@ -6,6 +6,7 @@ import com.joboffers.BaseIntegrationTests;
 import com.joboffers.SampleJobOfferResponse;
 import com.joboffers.domain.loginandregister.dto.RegistrationResultDto;
 import com.joboffers.domain.offer.dto.OfferResponseDto;
+import com.joboffers.infrastructure.loginandregister.controller.dto.JwtResponseDto;
 import com.joboffers.infrastructure.offer.scheduler.HttpOffersScheduler;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.utility.DockerImageName;
 
 import java.util.List;
+import java.util.regex.Pattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
@@ -109,6 +111,25 @@ public class TypicalScenarioUserWantsToSeeOffersIntegrationTest extends BaseInte
                 () -> assertThat(registrationResultDto.id()).isNotNull());
 
 //    Step 6: user tried to get JWT token by requesting POST /token with username=someUser, password=somePassword and system returned OK(200) and jwttoken=AAAA.BBBB.CCC
+        //given && when
+        ResultActions successLoginRequest = mockMvc.perform(post("/token")
+                .content("""
+                        {
+                        "username": "someUser",
+                        "password": "somePassword"
+                        }
+                        """.trim())
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
+        //then
+        MvcResult mvcResult = successLoginRequest.andExpect(status().isOk()).andReturn();
+        String successResultJson = mvcResult.getResponse().getContentAsString();
+        JwtResponseDto jwtResponseDto = objectMapper.readValue(successResultJson, JwtResponseDto.class);
+        String token = jwtResponseDto.token();
+        assertAll(
+                () -> assertThat(jwtResponseDto.username()).isEqualTo("someUser"),
+                () -> assertThat(token).matches(Pattern.compile("^([A-Za-z0-9-_=]+\\.)+([A-Za-z0-9-_=])+\\.?$"))
+        );
 
 
 //    Step 7: user made GET /offers with header ”Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with no offers (because after first scheduler run downloaded 0 offers).
@@ -116,6 +137,7 @@ public class TypicalScenarioUserWantsToSeeOffersIntegrationTest extends BaseInte
         String offersUrl = "/offers";
         //when
         ResultActions perform = mockMvc.perform(get(offersUrl)
+                        .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
         );
         // then
