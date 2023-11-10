@@ -165,6 +165,7 @@ public class TypicalScenarioUserWantsToSeeOffersIntegrationTest extends BaseInte
 //    Step 10: user made GET /offers with header ”Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 2 offers with id:1000 and id:2000
         //when
         ResultActions performGetForTwoOffers = mockMvc.perform(get(offersUrl)
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
         );
         // then
@@ -184,7 +185,10 @@ public class TypicalScenarioUserWantsToSeeOffersIntegrationTest extends BaseInte
         //given
         String offerId = "9999";
         //when
-        ResultActions performGetOffersWithNotExistingId = mockMvc.perform(get("/offers/" + offerId));
+        ResultActions performGetOffersWithNotExistingId = mockMvc.perform(get("/offers/" + offerId)
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+        );
         //then
         performGetOffersWithNotExistingId.andExpect(status().isNotFound())
                 .andExpect(content().json("""
@@ -199,6 +203,7 @@ public class TypicalScenarioUserWantsToSeeOffersIntegrationTest extends BaseInte
         String existingOfferIdInDatabase = expectedOffer1.id();
         //when
         ResultActions getOfferById = mockMvc.perform(get("/offers/" + existingOfferIdInDatabase)
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON)
         );
         //then
@@ -228,6 +233,7 @@ public class TypicalScenarioUserWantsToSeeOffersIntegrationTest extends BaseInte
 //step 14: user made GET /offers and system returned OK(200) with 4 offer
         //given && when
         ResultActions performGetForFourOffers = mockMvc.perform(get(offersUrl)
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         );
         // then
@@ -247,6 +253,7 @@ public class TypicalScenarioUserWantsToSeeOffersIntegrationTest extends BaseInte
         //given
         //when
         ResultActions performPostOffer = mockMvc.perform(post("/offers")
+                .header("Authorization", "Bearer " + token)
                 .content(
                         """
                                 {
@@ -277,6 +284,7 @@ public class TypicalScenarioUserWantsToSeeOffersIntegrationTest extends BaseInte
 //step 16: user made GET /offers with header “Authorization: Bearer AAAA.BBBB.CCC” and system returned OK(200) with 5 offers
         // given & when
         ResultActions peformGetOffers = mockMvc.perform(get("/offers")
+                .header("Authorization", "Bearer " + token)
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
         );
         // then
