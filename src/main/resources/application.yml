@@ -5,7 +5,7 @@ spring:
   cache:
     type: redis
     redis:
-      time-to-live: PT60M
+      time-to-live: PT10S
   data:
     mongodb:
       auto-index-creation: true
