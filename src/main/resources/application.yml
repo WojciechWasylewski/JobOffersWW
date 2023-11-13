@@ -1,4 +1,11 @@
 spring:
+  redis:
+    host: ${REDIS_HOST:localhost}
+    port: ${REDIS_PORT:63792}
+  cache:
+    type: redis
+    redis:
+      time-to-live: PT10S
   data:
     mongodb:
       auto-index-creation: true
