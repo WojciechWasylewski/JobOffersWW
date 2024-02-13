@@ -10,7 +10,7 @@ This project is a web application created in Spring Boot, allowing users to sear
 - **Add New Job Offers:** Users can add new job offers to the system.
 
 ## Deployment
-The application is deployed on AWS, and you can access the [Swagger UI](http://ec2-3-120-183-166.eu-central-1.compute.amazonaws.com:8000/swagger-ui/index.html?fbclid=IwAR0kzOU2pINIHe1_CRD1sb5N91_V8Y1SkFuIbe3B-yIZiVTJfi5LaMOy71k#/register-controller/registerUsingPOST) to interact with its endpoints.
+The application is deployed on AWS, and you can access the [Swagger UI](http://ec2-3-79-99-187.eu-central-1.compute.amazonaws.com:8000/swagger-ui/index.html#/github-rest-controller/getAllRepositories) to interact with its endpoints.
 ## Diagram
 <img src="diagram.png">
 <br>
