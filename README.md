@@ -10,7 +10,7 @@ This project is a web application created in Spring Boot, allowing users to sear
 - **Add New Job Offers:** Users can add new job offers to the system.
 
 ## Deployment
-The application is deployed on AWS, and you can access the [Swagger UI](http://ec2-3-79-99-187.eu-central-1.compute.amazonaws.com:8000/swagger-ui/index.html#/github-rest-controller/getAllRepositories) to interact with its endpoints.
+The application is deployed on AWS, and you can access the [Swagger UI](http://ec2-3-120-183-166.eu-central-1.compute.amazonaws.com:8000/swagger-ui/index.html?fbclid=IwAR0kzOU2pINIHe1_CRD1sb5N91_V8Y1SkFuIbe3B-yIZiVTJfi5LaMOy71k#/offers-rest-controller) to interact with its endpoints.
 ## Diagram
 <img src="diagram.png">
 <br>
@@ -38,8 +38,11 @@ Tests: <br>
 ![image](https://img.shields.io/badge/Testcontainers-9B489A?style=for-the-badge)
 ![image](https://img.shields.io/badge/WireMock-ac4642?style=for-the-badge) 
 <br>
-Other: <br>
+Deploy: <br>
+![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white)
 ![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=for-the-badge&logo=docker&logoColor=white)
+<br>
+Other: <br>
 ![Swagger](https://img.shields.io/badge/-Swagger-%23Clojure?style=for-the-badge&logo=swagger&logoColor=white)
 ![image](https://img.shields.io/badge/maven-C71A36?style=for-the-badge&logo=apachemaven&logoColor=white)
 
